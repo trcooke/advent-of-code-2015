@@ -1,10 +1,34 @@
 -module(wrapping).
 -include_lib("eunit/include/eunit.hrl").
--export([how_much_paper/1]).
+-export([how_much_paper/1, how_much_ribbon/1]).
 
 how_much_paper_single_test() -> 58 = how_much_paper("2x3x4").
 how_much_paper_single_double_digit_side_test() -> 43 = how_much_paper("1x1x10").
-how_much_paper_multiple_test() -> 1598415 = how_much_paper("4x23x21
+how_much_paper_multiple_test() -> 1598415 = how_much_paper(test_data()).
+how_much_ribbon_single_test() -> 34 = how_much_ribbon("2x3x4").
+how_much_ribbon_single_double_digit_side_test() -> 14 = how_much_ribbon("1x1x10").
+how_much_ribbon_multiple_test() -> 3812909 = how_much_ribbon(test_data()).
+
+how_much_paper(Presents) ->
+    lists:sum(lists:map(fun(X) -> how_much_paper_single(X) end,string:tokens(Presents,"\n"))).
+
+how_much_paper_single(Dimentions) ->
+    [{{W,_}},{{L,_}},{{H,_}}] = lists:map(fun(X) -> {string:to_integer(X)} end, string:tokens(Dimentions,"x")),
+    ProductLW = L*W,
+    ProductWH = W*H,
+    ProductHL = H*L,
+    2*ProductLW + 2*ProductWH + 2*ProductHL + lists:min([ProductLW,ProductWH,ProductHL]).
+
+how_much_ribbon(Presents) ->
+    lists:sum(lists:map(fun(X) -> how_much_ribbon_single(X) end,string:tokens(Presents,"\n"))).
+
+how_much_ribbon_single(Dimentions) ->
+    [{{W,_}},{{L,_}},{{H,_}}] = lists:map(fun(X) -> {string:to_integer(X)} end, string:tokens(Dimentions,"x")),
+    [ShortestSide,SecondShortestSide|_] = lists:sort([W,L,H]),
+    2*ShortestSide + 2*SecondShortestSide + W*L*H.
+
+
+test_data() -> "4x23x21
 22x29x19
 11x4x11
 8x10x5
@@ -1003,14 +1027,4 @@ how_much_paper_multiple_test() -> 1598415 = how_much_paper("4x23x21
 10x15x23
 21x29x14
 20x29x30
-23x11x5").
-
-how_much_paper(Presents) ->
-    lists:sum(lists:map(fun(X) -> how_much_paper_single(X) end,string:tokens(Presents,"\n"))).
-
-how_much_paper_single(Dimentions) ->
-    [{{W,_}},{{L,_}},{{H,_}}] = lists:map(fun(X) -> {string:to_integer(X)} end, string:tokens(Dimentions,"x")),
-    LW = L*W,
-    WH = W*H,
-    HL = H*L,
-    2*LW + 2*WH + 2*HL + lists:min([LW,WH,HL]).
+23x11x5".
