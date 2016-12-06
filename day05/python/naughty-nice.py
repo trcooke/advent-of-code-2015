@@ -40,23 +40,32 @@ def part1():
 
 
 def twoletterstwice(line):
+    line = line.replace("\n", "")
     lastpair = ("-", "-")
     pairs = []
     for char in line:
-        if (lastpair[1], char) in pairs and lastpair != (lastpair[1], char):
+        thispair = (lastpair[1], char)
+        print str(lastpair) + str(thispair)
+        if thispair in pairs and lastpair != thispair:
+            print "Twice: " + str(thispair)
             return True
-        pairs.append((lastpair[1], char))
-        lastpair = (lastpair[1], char)
+        if lastpair == thispair:
+            lastpair = ("", char)
+        else:
+            lastpair = thispair
+        pairs.append(thispair)
     return False
 
 
 def splitchars(line):
+    line = line.replace("\n", "")
     lasttwoletters = deque()
     lasttwoletters.append("-")
     lasttwoletters.append("-")
     for char in line:
         lastbutone = lasttwoletters.popleft()
         if char == lastbutone:
+            print "Split: " + str((char, lastbutone))
             return True
         lasttwoletters.append(char)
     return False
